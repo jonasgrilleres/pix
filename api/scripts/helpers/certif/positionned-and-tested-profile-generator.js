@@ -7,7 +7,6 @@ const {
   findDirectAndHigherLevelKEs,
   getAllTestedChallenges,
   mergeTestedChallengesAndKEsByCompetences,
-  mergeCompetencesWithReferentialInfos,
 } = require('./positionned-and-tested-profile-helper');
 
 const FILENAME = `${__dirname}/competence-details.html`;
@@ -22,10 +21,10 @@ const HEADCONTENT = `<!DOCTYPE html>
 const ENDCONTENT = '\n</body>\n</html>\n';
 
 function initializeDOM(dom) { return dom + HEADCONTENT; }
-function setHeaderDOM({ dom, userId, courseId }) {
+function setHeaderDOM({ dom, userId, certificationCourseId }) {
   return dom + `
     <h1>UserID: ${userId}</h1>
-    <h1>CertificationCourseId: ${courseId}</h1>
+    <h1>CertificationCourseId: ${certificationCourseId}</h1>
   `;
 }
 function finalizeDOM(dom) { return dom + ENDCONTENT; }
@@ -37,13 +36,14 @@ function createWebPageWithRowDom(dom) {
 }
 
 
-async function completeUserCompetences({ dom, userId, courseId }) {
+async function completeUserCompetences({ dom, userId, certificationCourseId }) {
   const KEs = await findDirectAndHigherLevelKEs({ userId });
-  const challengesTestedInCertif = await getAllTestedChallenges({ courseId });
-  const competences = mergeTestedChallengesAndKEsByCompetences({ KEs, challengesTestedInCertif });
-  const competencesWithReferentialInfos = await mergeCompetencesWithReferentialInfos({ competences });
+  const challengesTestedInCertif = await getAllTestedChallenges({ courseId: certificationCourseId });
+  const competences = await mergeTestedChallengesAndKEsByCompetences({ KEs, challengesTestedInCertif });
+  console.log({competences});
+  console.log(competences[0].tubes);
 
-  dom += drawCompetencesDivByKEs(competencesWithReferentialInfos);
+  dom += drawCompetencesDivByKEs(competences);
   return dom;
 }
 
@@ -88,13 +88,13 @@ async function main() {
     const userId = parseInt(process.argv[2]);
     if(!userId) throw Error('Please give a correct userId !');
 
-    const certifCourseId = parseInt(process.argv[3]);
-    if(!certifCourseId) throw Error('Please give a correct certifCourseId !');
+    const certificationCourseId = parseInt(process.argv[3]);
+    if(!certificationCourseId) throw Error('Please give a correct certificationCourseId !');
   
     let dom = '';
     dom = initializeDOM(dom);
-    dom = setHeaderDOM({ dom, userId, certifCourseId });
-    dom = await completeUserCompetences({ dom, userId, certifCourseId });
+    dom = setHeaderDOM({ dom, userId, certificationCourseId });
+    dom = await completeUserCompetences({ dom, userId, certificationCourseId });
     dom = finalizeDOM(dom);
   
     createWebPageWithRowDom(dom);

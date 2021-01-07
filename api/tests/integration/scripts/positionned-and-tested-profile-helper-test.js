@@ -67,7 +67,7 @@ describe.only('Integration | Scripts | create-or-update-sco-organizations.js', (
 
   describe('#mergeTestedChallengesAndKEsByCompetences', () => {
 
-    it.only('should return positionned and tested skills sorted by competences', async () => {
+    it('should return positionned and tested skills sorted by competences', async () => {
       // given
       // referentiel
       const competence1 = new Competence({ id: 'competence1', name: 'competence orange', area: 'Orange' });
