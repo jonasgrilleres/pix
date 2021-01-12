@@ -14,6 +14,11 @@ describe('Unit | Application | Controller | Authentication', () => {
     const accessToken = 'jwt.access.token';
 
     let request;
+    const USER_ID = 1;
+    const username = 'user@email.com';
+    const password = 'user_password';
+    const scope = 'pix-orga';
+    const source = 'pix';
 
     beforeEach(() => {
       request = {
@@ -22,38 +27,21 @@ describe('Unit | Application | Controller | Authentication', () => {
         },
         payload: {
           grant_type: 'password',
-          username: 'user@email.com',
-          password: 'user_password',
-          scope: 'pix-orga',
+          username,
+          password,
+          scope,
         },
       };
-      sinon.stub(usecases, 'authenticateUser').resolves(accessToken);
-      sinon.stub(tokenService, 'extractUserId').returns(1);
-    });
-
-    it('should check user credentials', async () => {
-      // given
-      const username = 'user@email.com';
-      const password = 'user_password';
-      const scope = 'pix-orga';
-      const source = 'pix';
-
-      // when
-      await authenticationController.authenticateUser(request, hFake);
-
-      // then
-      expect(usecases.authenticateUser).to.have.been.calledWith({
-        username,
-        password,
-        scope,
-        source,
-      });
+      sinon.stub(tokenService, 'extractUserId').returns(USER_ID);
     });
 
     /**
      * @see https://www.oauth.com/oauth2-servers/access-tokens/access-token-response/
      */
     it('should return an OAuth 2 token response (even if we do not really implement OAuth 2 authorization protocol)', async () => {
+      // given
+      sinon.stub(usecases, 'authenticateUser').withArgs({ username, password, scope, source }).resolves(accessToken);
+
       // when
       const response = await authenticationController.authenticateUser(request, hFake);
 
@@ -61,7 +49,7 @@ describe('Unit | Application | Controller | Authentication', () => {
       const expectedResponseResult = {
         token_type: 'bearer',
         access_token: accessToken,
-        user_id: 1,
+        user_id: USER_ID,
       };
       expect(response.source).to.deep.equal(expectedResponseResult);
       expect(response.statusCode).to.equal(200);
@@ -211,4 +199,52 @@ describe('Unit | Application | Controller | Authentication', () => {
       expect(response.source).to.deep.equal(expectedResult);
     });
   });
+
+  describe('#authenticateApplication', () => {
+
+    const accessToken = 'jwt.access.token';
+
+    let request;
+    const clientId = Symbol('clientId');
+    const clientSecret = Symbol('clientSecret');
+    const scope = Symbol('scope');
+
+    beforeEach(() => {
+      request = {
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        payload: {
+          grant_type: 'password',
+          clientId,
+          clientSecret,
+          scope,
+        },
+      };
+      sinon.stub(tokenService, 'extractClientId').returns(clientId);
+    });
+
+    it('should return an OAuth 2 token response', async () => {
+      // given
+      sinon.stub(usecases, 'authenticateApplication').withArgs({ clientId, clientSecret, scope }).resolves(accessToken);
+
+      // when
+      const response = await authenticationController.authenticateApplication(request, hFake);
+
+      // then
+      const expectedResponseResult = {
+        token_type: 'bearer',
+        access_token: accessToken,
+        client_id: clientId,
+      };
+      expect(response.source).to.deep.equal(expectedResponseResult);
+      expect(response.statusCode).to.equal(200);
+      expect(response.headers).to.deep.equal({
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Cache-Control': 'no-store',
+        'Pragma': 'no-cache',
+      });
+    });
+  });
+
 });

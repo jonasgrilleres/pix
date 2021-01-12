@@ -570,4 +570,110 @@ describe('Acceptance | Controller | authentication-controller', () => {
       });
     });
   });
+
+  describe('POST /api/application/token', () => {
+
+    let options;
+    const CLIENT_ID = 'clientId';
+    const CLIENT_SECRET = 'clientSecret';
+    const SCOPE = 'organizations-certifications-result';
+
+    beforeEach(async () => {
+      options = {
+        method: 'POST',
+        url: '/api/application/token',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      };
+
+      await databaseBuilder.commit();
+    });
+
+    it('should return an 200 with accessToken when clientId, client secret and scope are registred', async () => {
+      // when
+
+      options.payload = querystring.stringify({
+        grant_type: 'client_credentials',
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        scope: SCOPE,
+      });
+
+      const response = await server.inject(options);
+
+      // then
+      expect(response.statusCode).to.equal(200);
+
+      const result = response.result;
+      expect(result.token_type).to.equal('bearer');
+      expect(result.access_token).to.exist;
+      expect(result.client_id).to.equal(CLIENT_ID);
+    });
+
+    it('should return an 401 when clientId is not registred', async () => {
+      // when
+
+      options.payload = querystring.stringify({
+        grant_type: 'client_credentials',
+        clientId: 'NOT REGISTRED',
+        clientSecret: CLIENT_SECRET,
+        scope: SCOPE,
+      });
+
+      const response = await server.inject(options);
+
+      // then
+      expect(response.result.errors[0]).to.deep.equal({
+        'title': 'Unauthorized',
+        'detail': 'The client ID is invalid.',
+        'status': '401',
+      });
+
+    });
+
+    it('should return an 401 when client secret is not valid', async () => {
+      // when
+
+      options.payload = querystring.stringify({
+        grant_type: 'client_credentials',
+        clientId: CLIENT_ID,
+        clientSecret: 'invalid secret',
+        scope: SCOPE,
+      });
+
+      const response = await server.inject(options);
+
+      // then
+      expect(response.result.errors[0]).to.deep.equal({
+        'title': 'Unauthorized',
+        'detail': 'The client secret is invalid.',
+        'status': '401',
+      });
+
+    });
+
+    it('should return an 403 when scope is not allowed', async () => {
+      // when
+
+      options.payload = querystring.stringify({
+        grant_type: 'client_credentials',
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        scope: 'invalid scope',
+      });
+
+      const response = await server.inject(options);
+
+      // then
+      expect(response.result.errors[0]).to.deep.equal({
+        'title': 'Forbidden',
+        'detail': 'The scope is not allowed.',
+        'status': '403',
+      });
+
+    });
+
+  });
+
 });
