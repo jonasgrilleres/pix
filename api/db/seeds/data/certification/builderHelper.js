@@ -10,7 +10,7 @@ function _createSchoolingRegistration(databaseBuilder, userId, organizationId) {
   );
 }
 
-function _buildCertificationData({ databaseBuilder, organizationId, isPublished, status, verificationCode, type, pixScore, sessionId, competenceMarks = [] }) {
+function _buildCertificationData({ databaseBuilder, organizationId, isPublished, status, verificationCode, type, pixScore, sessionId, competenceMarks = [{}, {}] }) {
   const userId = _createUser(databaseBuilder).id;
   const schoolingRegistration = _createSchoolingRegistration(databaseBuilder, userId, organizationId);
 
