@@ -29,6 +29,7 @@ const targetProfilesBuilder = require('./data/target-profiles-builder');
 const { usersBuilder } = require('./data/users-builder');
 const usersPixRolesBuilder = require('./data/users_pix_roles-builder');
 const stagesBuilder = require('./data/stages-builder');
+const livretScolaireCertificationBuilder = require('./data/certification/PIX-1937-certifications-builder');
 
 const SEQUENCE_RESTART_AT_NUMBER = 10000000;
 const SEED_NUMBER = 20110228;
@@ -75,6 +76,8 @@ exports.seed = (knex) => {
 
   // Éléments de parcours pour l'utilisateur Pix Aile
   buildPixAileProfile({ databaseBuilder });
+
+  livretScolaireCertificationBuilder({ databaseBuilder });
 
   return databaseBuilder.commit()
     .then(() => alterSequenceIfPG(knex));

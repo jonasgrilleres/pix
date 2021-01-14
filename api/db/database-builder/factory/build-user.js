@@ -66,7 +66,7 @@ const buildUser = function buildUser({
   updatedAt = new Date(),
 } = {}) {
 
-  email = isUndefined(email) ? faker.internet.exampleEmail(firstName, lastName).toLowerCase() : email || null;
+  email = isUndefined(email) ? faker.random.number(999999) + faker.internet.exampleEmail(firstName, lastName).toLowerCase() : email || null;
 
   const values = {
     id, firstName, lastName, email, username,
