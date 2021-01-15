@@ -4,7 +4,7 @@ import setupIntlRenderingTest from '../../helpers/setup-intl-rendering';
 import { find, click, render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 
-describe('Integration | Component | certification results template', function() {
+describe('Integration | Component | certification-results-template', function() {
   setupIntlRenderingTest();
 
   context('When component is rendered', function() {
@@ -16,7 +16,7 @@ describe('Integration | Component | certification results template', function() 
 
     it('should not be able to click on validation button when the verification is unchecked ', async function() {
       // when
-      await render(hbs`{{certification-results-page certificationNumber=certificationNumber}}`);
+      await render(hbs`<CertificationResultsPage @certificationNumber={{this.certificationNumber}} />`);
 
       // then
       expect(find('.result-content__validation-button')).to.not.exist;
@@ -25,7 +25,7 @@ describe('Integration | Component | certification results template', function() 
 
     it('should be able to click on validation when we check to show the last message', async function() {
       // when
-      await render(hbs`{{certification-results-page certificationNumber=certificationNumber}}`);
+      await render(hbs`<CertificationResultsPage @certificationNumber={{this.certificationNumber}} />`);
       await click('#validSupervisor');
       await click('.result-content__validation-button');
 
@@ -35,7 +35,7 @@ describe('Integration | Component | certification results template', function() 
 
     it('should have a button to logout at the end of certification', async function() {
       // when
-      await render(hbs`{{certification-results-page certificationNumber=certificationNumber}}`);
+      await render(hbs`<CertificationResultsPage @certificationNumber={{this.certificationNumber}} />`);
       await click('#validSupervisor');
       await click('.result-content__validation-button');
 
