@@ -6,7 +6,7 @@ const {
 } = require('../../../test-helper');
 const createServer = require('../../../../server');
 const Assessment = require('../../../../lib/domain/models/Assessment');
-const { buildValidatedPublishedCertificationData, mockLearningContentCompetences } = require('../../../../tests/tooling/domain-builder/factory/build-certifications-results-for-ls');
+const { buildOrganization, buildValidatedPublishedCertificationData, mockLearningContentCompetences } = require('../../../../tests/tooling/domain-builder/factory/build-certifications-results-for-ls');
 
 describe('Acceptance | API | Certifications', () => {
 
@@ -20,6 +20,7 @@ describe('Acceptance | API | Certifications', () => {
     const uai = '789567AA';
     const type = Assessment.types.CERTIFICATION;
     const verificationCode = 'P-123498NN';
+    let organizationId;
 
     const referentialCompetences = {
       'data': [
@@ -187,7 +188,7 @@ describe('Acceptance | API | Certifications', () => {
     ];
 
     beforeEach(() => {
-
+      organizationId = buildOrganization(uai).id;
       mockLearningContentCompetences();
 
     });
@@ -199,7 +200,7 @@ describe('Acceptance | API | Certifications', () => {
         // given
         server = await createServer();
         const { schoolingRegistration, session, certificationCourse }
-          = buildValidatedPublishedCertificationData({ uai, verificationCode, type, pixScore, competenceMarks: [ { code: '1.1', level: 6 }, { code: '5.2', level: 4 }] });
+          = buildValidatedPublishedCertificationData({ organizationId, verificationCode, type, pixScore, competenceMarks: [ { code: '1.1', level: 6 }, { code: '5.2', level: 4 }] });
         await databaseBuilder.commit();
 
         options = {
