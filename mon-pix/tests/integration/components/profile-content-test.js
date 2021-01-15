@@ -1,6 +1,3 @@
-/* eslint ember/no-classic-classes: 0 */
-/* eslint ember/require-tagless-components: 0 */
-
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import setupIntlRenderingTest from '../../helpers/setup-intl-rendering';
@@ -16,13 +13,11 @@ describe('Integration | Component | Profile-content', function() {
     let model;
 
     beforeEach(function() {
-      this.owner.register('service:session', Service.extend({
-        data: {
-          authenticated: {
-            access_token: 'VALID-TOKEN',
-          },
-        },
-      }));
+      class session extends Service {
+        isAuthenticated = true;
+      }
+
+      this.owner.register('service:session', session);
 
       model = {
         profile: {
@@ -54,7 +49,6 @@ describe('Integration | Component | Profile-content', function() {
           ],
         },
       };
-
     });
 
     context('When user is on tablet/desktop ', function() {
@@ -62,8 +56,7 @@ describe('Integration | Component | Profile-content', function() {
         // when
         setBreakpoint('tablet');
         this.set('model', model);
-        this.owner.register('service:session', Service.extend({ isAuthenticated: true }));
-        await render(hbs`{{profile-content model=model media=media}}`);
+        await render(hbs`<ProfileContent @model={{this.model}} @media={{this.media}} />`);
 
         // then
         expect(find('.competence-card')).to.exist;
@@ -77,8 +70,7 @@ describe('Integration | Component | Profile-content', function() {
         // when
         setBreakpoint('mobile');
         this.set('model', model);
-        this.owner.register('service:session', Service.extend({ isAuthenticated: true }));
-        await render(hbs`{{profile-content model=model media=media}}`);
+        await render(hbs`<ProfileContent @model={{this.model}} @media={{this.media}} />`);
 
         // then
         expect(find('.competence-card')).to.exist;
