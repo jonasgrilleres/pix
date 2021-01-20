@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const fs = require('fs');
 const _ = require('lodash');
+const certificationCourseRepository = require('../../../lib/infrastructure/repositories/certification-course-repository');
 
 const {
   findDirectAndHigherLevelKEs,
@@ -21,10 +22,13 @@ const HEADCONTENT = `<!DOCTYPE html>
 const ENDCONTENT = '\n</body>\n</html>\n';
 
 function initializeDOM(dom) { return dom + HEADCONTENT; }
-function setHeaderDOM({ dom, userId, certificationCourseId }) {
+function setHeaderDOM({ dom, userId, firstName, lastName, certificationCourseId }) {
   return dom + `
-    <h1>UserID: ${userId}</h1>
-    <h1>CertificationCourseId: ${certificationCourseId}</h1>
+  <section>
+    <h1>Informations du candidat de certification: </h1>
+    <p>${firstName} ${lastName}, (userId: ${userId})</p>
+    <p>CertificationCourseId: ${certificationCourseId}</p>
+  </section>
   `;
 }
 function finalizeDOM(dom) { return dom + ENDCONTENT; }
@@ -78,20 +82,18 @@ function drawCompetencesDivByKEs(competences) {
 }
 
 
-// TODO : enlever le userId des params (ne prendre que le certifCourse en entrée)
 // TODO : repérer les skill active VS opératives
 // TODO : trier les skills dans les tubes (certains sont dans l'odre décroissant au lieu de croissant)
 async function main() {
   try {
-    const userId = parseInt(process.argv[2]);
-    if(!userId) throw Error('Please give a correct userId !');
-
-    const certificationCourseId = parseInt(process.argv[3]);
+    const certificationCourseId = parseInt(process.argv[2]);
     if(!certificationCourseId) throw Error('Please give a correct certificationCourseId !');
+
+    const { userId, firstName, lastName } = await certificationCourseRepository.get(certificationCourseId);
   
     let dom = '';
     dom = initializeDOM(dom);
-    dom = setHeaderDOM({ dom, userId, certificationCourseId });
+    dom = setHeaderDOM({ dom, userId, firstName, lastName, certificationCourseId });
     dom = await completeUserCompetences({ dom, userId, certificationCourseId });
     dom = finalizeDOM(dom);
   
