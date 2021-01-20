@@ -1,13 +1,22 @@
 /* GENERAL */
 * {
   word-break: break-all;
+  font-family: 'Roboto', Arial, sans-serif;;
 }
+.jaffa { background: linear-gradient(0deg, #FEDC41 0%, #F45C00 100%); }
+.emerald { background: linear-gradient(0deg, #52D987 0%, #1A8C89 100%); }
+.cerulean { background: linear-gradient(0deg, #388AFF 0%, #985FFF 100%); }
+.wild-strawberry { background: linear-gradient(180deg, #AC008D 45%, #FF3F94 100%); }
+.butterfly-bush { background: linear-gradient(180deg, #5E2563 45%, #564DA6 100%); }
 h1, h2, h3, p {
   cursor: pointer;
   position: relative;
+  width: max-content;
 }
+h2 { color: white;}
 h1:hover, h2:hover, h3:hover, p:hover {
-  background-color: rgb(159, 204, 159);
+  background-color: rgb(255, 234, 47);
+  transition-duration: 0.1s
 }
 h1 span, h2 span, h3 span, p span {
   display: none;
@@ -34,13 +43,15 @@ h1:hover span, h2:hover span, h3:hover span, p:hover span {
 /* COMPETENCES */
 .competence {
   padding: 5px 20px;
-  border: 4px solid black;
+  box-shadow: 0 3px 4px 0 rgba(12, 22, 58, 0.1), 0 1px 3px 0 rgba(7, 20, 46, 0.1);
+  border-radius: 4px;
   background-color: aliceblue;
   margin-bottom: 10px;
 }
 .competence > div {
   display: flex;
   flex-wrap: wrap;
+  padding-bottom: 10px;
 }
 
 
@@ -49,14 +60,22 @@ h1:hover span, h2:hover span, h3:hover span, p:hover span {
   flex-grow: 1;
   max-width: max-content;
   padding: 0 8px;
-  margin: 0 3px;
-  border: 3px solid rgb(233, 133, 233);
+  margin: 3px;
+  background-color: rgb(249, 245, 250);
+  box-shadow: 0 3px 4px 0 rgba(12, 22, 58, 0.1), 0 1px 3px 0 rgba(7, 20, 46, 0.1);
+  border-radius: 4px;
+  color: rgb(218, 96, 218);
 }
 
 
 /* SKILLS */
+p[class^='skill'] {
+  color: rgb(209, 112, 66);
+}
 .skill--tested {
-  border: 4px solid #F24645;
+  padding: 2px 4px;
+  border: 3.5px solid #F24645;
+  border-radius: 4px;
 }
 .skill--positionned {
   background-color: #96eebe;

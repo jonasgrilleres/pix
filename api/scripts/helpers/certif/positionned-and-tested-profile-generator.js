@@ -26,9 +26,8 @@ function initializeDOM(dom) { return dom + HEADCONTENT; }
 function setHeaderDOM({ dom, userId, firstName, lastName, certificationCourseId }) {
   return dom + `
   <section>
-    <h1>Informations du candidat de certification: </h1>
-    <p>${firstName} ${lastName}, (userId: ${userId})</p>
-    <p>CertificationCourseId: ${certificationCourseId}</p>
+    <h1>Candidat de certification: ${firstName} ${lastName}, (userId: ${userId})</h1>
+    <h1>CertificationCourseId: ${certificationCourseId}</h1>
   </section>
   `;
 }
@@ -55,7 +54,7 @@ function drawCompetencesDivByKEs(competences) {
 
   // Pour chaque compétence
   _.forIn(competences, (competence) => {
-    acc += `<div class="competence">`;
+    acc += `<div class="competence ${competence.area.color}">`;
     acc += `<h2 onClick="showDetails(${competence.id})">
       ${competence.name}
       <span id=${competence.id}>CompetenceId: ${competence.id}</span>
@@ -82,7 +81,7 @@ function drawCompetencesDivByKEs(competences) {
             </span>
           </p>`;
         } else {
-          acc += `<p onClick="showDetails(${skill.id})"> ${skill.name} <span id=${skill.id}>SkillId: ${skill.id}</span></p>`;
+          acc += `<p class="skill" onClick="showDetails(${skill.id})"> ${skill.name} <span id=${skill.id}>SkillId: ${skill.id}</span></p>`;
         }
         
       });
