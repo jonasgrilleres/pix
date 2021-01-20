@@ -33,12 +33,11 @@ function setHeaderDOM({ dom, userId, firstName, lastName, certificationCourseId 
 }
 function finalizeDOM(dom) { return dom + ENDCONTENT; }
 function createWebPageWithRowDom(dom) {
-  fs.writeFile(FILENAME, dom, function (err) {
+  fs.writeFile(FILENAME, dom, function(err) {
     if (err) throw err;
     console.log('Competence-detail page created !');
   });
 }
-
 
 async function completeUserCompetences({ dom, userId, certificationCourseId }) {
   const KEs = await findDirectAndHigherLevelKEs({ userId });
@@ -59,11 +58,11 @@ function drawCompetencesDivByKEs(competences) {
       ${competence.name}
       <span id=${competence.id}>CompetenceId: ${competence.id}</span>
     </h2>`;
-    acc += '<div>'
+    acc += '<div>';
 
     // Pour chaque tube (sujet)
     _.forIn(competence.tubes, (tube) => {
-      acc += `<div class="tube">`;
+      acc += '<div class="tube">';
       acc += `<h3 onClick="showDetails(${tube.id})">
         ${tube.name}
         <span id=${tube.id}>TubeId: ${tube.id}</span>
@@ -83,37 +82,35 @@ function drawCompetencesDivByKEs(competences) {
         } else {
           acc += `<p class="skill" onClick="showDetails(${skill.id})"> ${skill.name} <span id=${skill.id}>SkillId: ${skill.id}</span></p>`;
         }
-        
+
       });
       acc += '</div>';
     });
 
-    acc +='</div>'
-    acc +='</div>'
+    acc += '</div>';
+    acc += '</div>';
   });
   return acc;
 }
 
-
-// TODO : repérer les skill active VS opératives
 async function main() {
   try {
     const certificationCourseId = parseInt(process.argv[2]);
-    if(!certificationCourseId) throw Error('Please give a correct certificationCourseId !');
+    if (!certificationCourseId) throw Error('Please give a correct certificationCourseId !');
 
     const { userId, firstName, lastName } = await certificationCourseRepository.get(certificationCourseId);
-  
+
     let dom = '';
     dom = initializeDOM(dom);
     dom = setHeaderDOM({ dom, userId, firstName, lastName, certificationCourseId });
     dom = await completeUserCompetences({ dom, userId, certificationCourseId });
     dom = finalizeDOM(dom);
-  
+
     createWebPageWithRowDom(dom);
   } catch (error) {
     console.error(error);
   }
-  
+
 }
 
 main();

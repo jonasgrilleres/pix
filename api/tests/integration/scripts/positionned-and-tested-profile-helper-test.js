@@ -13,11 +13,10 @@ const {
   findDirectAndHigherLevelKEs,
   getAllTestedChallenges,
   mergeTestedChallengesAndKEsByCompetences,
-  // mergeCompetencesWithReferentialInfos,
 } = require('../../../scripts/helpers/certif/positionned-and-tested-profile-helper');
 const Competence = require('../../../lib/domain/models/Competence');
 
-describe.only('Integration | Scripts | create-or-update-sco-organizations.js', () => {
+describe('Integration | Scripts | create-or-update-sco-organizations.js', () => {
 
   describe('#findDirectAndHigherLevelKEs', () => {
 
@@ -59,7 +58,7 @@ describe.only('Integration | Scripts | create-or-update-sco-organizations.js', (
           challengeId: challenge.challengeId,
           courseId: challenge.courseId,
           competenceId: challenge.competenceId,
-        }
+        };
       });
       expect(result).to.deep.equal(expectedChallenges);
     });
@@ -128,11 +127,11 @@ describe.only('Integration | Scripts | create-or-update-sco-organizations.js', (
         skillCollaborer4,
         skillMoteur3,
       ]);
-      const tubeGetStub = sinon.stub(tubeRepository, 'get')
+      const tubeGetStub = sinon.stub(tubeRepository, 'get');
       tubeGetStub.withArgs(tube1.id).resolves(tube1);
       tubeGetStub.withArgs(tube2.id).resolves(tube2);
       tubeGetStub.withArgs(tube3.id).resolves(tube3);
-      const competenceGetStub = sinon.stub(competenceRepository, 'get')
+      const competenceGetStub = sinon.stub(competenceRepository, 'get');
       competenceGetStub.withArgs({ id: competence1.id, locale: FRENCH_FRANCE }).resolves(competence1);
       competenceGetStub.withArgs({ id: competence2.id, locale: FRENCH_FRANCE }).resolves(competence2);
 
@@ -178,7 +177,7 @@ describe.only('Integration | Scripts | create-or-update-sco-organizations.js', (
                   name: skillCitation4.name,
                   mbTestedChallenge: [],
                   tubeId: tube2.id,
-                }
+                },
               ],
             },
           ],
@@ -201,7 +200,7 @@ describe.only('Integration | Scripts | create-or-update-sco-organizations.js', (
                 },
               ],
             },
-          ]
+          ],
         },
       ];
       expect(result).to.deep.equal(expectedResult);

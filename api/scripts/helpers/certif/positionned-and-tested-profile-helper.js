@@ -27,7 +27,6 @@ async function getAllTestedChallenges({ courseId }) {
   return challengeList.map((challenge) => bookshelfToDomainConverter.buildDomainObject(CertificationChallengeBookshelf, challenge));
 }
 
-
 async function _getPositionnedSkillsFromKEs(KEs) {
   const positionnedSkills = await Promise.all(_.map(KEs, async (KE) => {
     const allSkillsForThisCompetence = await skillRepository.findOperativeByCompetenceId(KE.competenceId);
@@ -36,7 +35,7 @@ async function _getPositionnedSkillsFromKEs(KEs) {
       ? { id: skillFoundForThisKE.id, name: skillFoundForThisKE.name, tubeId: skillFoundForThisKE.tubeId }
       : undefined;
   }));
-  
+
   return positionnedSkills.filter((positionnedSkill) => positionnedSkill !== undefined);
 }
 
@@ -44,7 +43,7 @@ function _tagTestedSkills({ skills, challengesTestedInCertif }) {
   return _.map(skills, (skill) => {
     skill.mbTestedChallenge = _.filter(
       challengesTestedInCertif,
-      (challenge) => challenge.associatedSkillId === skill.id
+      (challenge) => challenge.associatedSkillId === skill.id,
     );
     return skill;
   });
@@ -84,8 +83,8 @@ async function mergeTestedChallengesAndKEsByCompetences({ KEs, challengesTestedI
   const positionnedSkills = await _getPositionnedSkillsFromKEs(KEs);
 
   const positionnedAndTestedSkills = _tagTestedSkills({ skills: positionnedSkills, challengesTestedInCertif });
-  
-  const tubesWithSkills = await _groupSkillsByTubes(positionnedAndTestedSkills)
+
+  const tubesWithSkills = await _groupSkillsByTubes(positionnedAndTestedSkills);
 
   const competencesWithTubesAndSkills = await _groupTubesByCompetences(tubesWithSkills);
 
@@ -96,4 +95,4 @@ module.exports = {
   findDirectAndHigherLevelKEs,
   getAllTestedChallenges,
   mergeTestedChallengesAndKEsByCompetences,
-}
+};
