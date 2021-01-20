@@ -17,6 +17,7 @@ const HEADCONTENT = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="competence-details.css">
     <title>Cheat view</title>
+    <script src="competence-details.js"></script>
   </head>
 <body>\n`;
 const ENDCONTENT = '\n</body>\n</html>\n';
@@ -54,23 +55,36 @@ function drawCompetencesDivByKEs(competences) {
 
   // Pour chaque compétence
   _.forIn(competences, (competence) => {
-    acc += `<div class="competence" id=${competence.id} >`;
-    acc += '<h2>' + competence.name + ' <span>(' + competence.id + ')</span></h2>';
+    acc += `<div class="competence">`;
+    acc += `<h2 onClick="showDetails(${competence.id})">
+      ${competence.name}
+      <span id=${competence.id}>CompetenceId: ${competence.id}</span>
+    </h2>`;
     acc += '<div>'
 
     // Pour chaque tube (sujet)
     _.forIn(competence.tubes, (tube) => {
-      acc += `<div class="tube" id=${tube.id}>`;
-      acc += '<h3>' + tube.name + ' <span>(' + tube.id + ')</span></h3>';
+      acc += `<div class="tube">`;
+      acc += `<h3 onClick="showDetails(${tube.id})">
+        ${tube.name}
+        <span id=${tube.id}>TubeId: ${tube.id}</span>
+      </h3>`;
       _.map(tube.skills, (skill) => {
         const skillWasTestedInCertif = skill.mbTestedChallenge.length > 0;
-        let skillClass = '';
-        if (skillWasTestedInCertif)
-          skillClass += ' skill--tested';
-        if (skill.isPositionned)
-          skillClass += ' skill--positionned';
+
+        if (skillWasTestedInCertif) {
+          acc += `<p class="skill--tested" onClick="showDetails(${skill.id})">
+            ${skill.name}
+            <span id=${skill.id}>
+              SkillId: ${skill.id}<br>
+              CertificationChallengeId: ${skill.mbTestedChallenge[0].id}<br>
+              ChallengeId: ${skill.mbTestedChallenge[0].challengeId}<br>
+            </span>
+          </p>`;
+        } else {
+          acc += `<p onClick="showDetails(${skill.id})"> ${skill.name} <span id=${skill.id}>SkillId: ${skill.id}</span></p>`;
+        }
         
-        acc += `<p class="${skillClass}"> ${skill.name} <span>${skill.id}</span></p>`;
       });
       acc += '</div>';
     });
@@ -83,7 +97,6 @@ function drawCompetencesDivByKEs(competences) {
 
 
 // TODO : repérer les skill active VS opératives
-// TODO : trier les skills dans les tubes (certains sont dans l'odre décroissant au lieu de croissant)
 async function main() {
   try {
     const certificationCourseId = parseInt(process.argv[2]);

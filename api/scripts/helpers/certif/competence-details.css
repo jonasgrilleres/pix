@@ -3,24 +3,32 @@
   word-break: break-all;
 }
 h1, h2, h3, p {
-  cursor: help;
+  cursor: pointer;
   position: relative;
+}
+h1:hover, h2:hover, h3:hover, p:hover {
+  background-color: rgb(159, 204, 159);
 }
 h1 span, h2 span, h3 span, p span {
   display: none;
   position: absolute;
-  top: -150%;
+  z-index: 10;
+  top: calc(100% + 4px);
   left: 0;
   background-color: #172B4D;
   border-radius: 4px;
   color: #FAFBFC;
-  padding: 0.3rem 0.6rem;
+  padding: 0.5rem 0.6rem;
   text-align: center;
   word-break: normal;
+  min-width: max-content;
 }
 h1:hover span, h2:hover span, h3:hover span, p:hover span {
   display: block;
 }
+
+.details--visible { display: block; }
+.details--invisible { display: none; }
 
 
 /* COMPETENCES */
