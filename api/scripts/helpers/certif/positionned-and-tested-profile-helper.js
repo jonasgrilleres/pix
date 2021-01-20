@@ -28,16 +28,16 @@ async function getAllTestedChallenges({ courseId }) {
 }
 
 
-function _getPositionnedSkillsFromKEs(KEs) {
-  return Promise.all(_.map(KEs, async (KE) => {
+async function _getPositionnedSkillsFromKEs(KEs) {
+  const positionnedSkills = await Promise.all(_.map(KEs, async (KE) => {
     const allSkillsForThisCompetence = await skillRepository.findOperativeByCompetenceId(KE.competenceId);
     const skillFoundForThisKE = _.find((allSkillsForThisCompetence), (skill) => skill.id === KE.skillId);
-    return {
-      id: skillFoundForThisKE.id,
-      name: skillFoundForThisKE.name,
-      tubeId: skillFoundForThisKE.tubeId,
-    };
+    return skillFoundForThisKE
+      ? { id: skillFoundForThisKE.id, name: skillFoundForThisKE.name, tubeId: skillFoundForThisKE.tubeId }
+      : undefined;
   }));
+  
+  return positionnedSkills.filter((positionnedSkill) => positionnedSkill !== undefined);
 }
 
 function _tagTestedSkills({ skills, challengesTestedInCertif }) {

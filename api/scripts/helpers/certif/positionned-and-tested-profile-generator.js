@@ -40,8 +40,6 @@ async function completeUserCompetences({ dom, userId, certificationCourseId }) {
   const KEs = await findDirectAndHigherLevelKEs({ userId });
   const challengesTestedInCertif = await getAllTestedChallenges({ courseId: certificationCourseId });
   const competences = await mergeTestedChallengesAndKEsByCompetences({ KEs, challengesTestedInCertif });
-  console.log({competences});
-  console.log(competences[0].tubes);
 
   dom += drawCompetencesDivByKEs(competences);
   return dom;
@@ -61,7 +59,7 @@ function drawCompetencesDivByKEs(competences) {
       acc += `<div class="tube" id=${tube.id}>`;
       acc += '<h3>' + tube.name + ' <span>(' + tube.id + ')</span></h3>';
       _.map(tube.skills, (skill) => {
-        const skillWasTestedInCertif = Boolean(skill.mbTestedChallenge);
+        const skillWasTestedInCertif = skill.mbTestedChallenge.length > 0;
         let skillClass = '';
         if (skillWasTestedInCertif)
           skillClass += ' skill--tested';
