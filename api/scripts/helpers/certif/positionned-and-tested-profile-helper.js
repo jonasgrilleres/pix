@@ -8,6 +8,7 @@ const skillRepository = require('../../../lib/infrastructure/repositories/skill-
 const KnowledgeElement = require('../../../lib/domain/models/KnowledgeElement');
 const { FRENCH_FRANCE } = require('../../../lib/domain/constants').LOCALE;
 
+const bluebird = require('bluebird');
 const _ = require('lodash');
 
 async function findDirectAndHigherLevelKEs({ userId }) {
@@ -28,13 +29,13 @@ async function getAllTestedChallenges({ courseId }) {
 }
 
 async function _getPositionnedSkillsFromKEs(KEs) {
-  const positionnedSkills = await Promise.all(_.map(KEs, async (KE) => {
+  const positionnedSkills = await bluebird.mapSeries(KEs, async (KE) => {
     const allSkillsForThisCompetence = await skillRepository.findOperativeByCompetenceId(KE.competenceId);
     const skillFoundForThisKE = _.find((allSkillsForThisCompetence), (skill) => skill.id === KE.skillId);
     return skillFoundForThisKE
       ? { id: skillFoundForThisKE.id, name: skillFoundForThisKE.name, tubeId: skillFoundForThisKE.tubeId }
       : undefined;
-  }));
+  });
 
   return positionnedSkills.filter((positionnedSkill) => positionnedSkill !== undefined);
 }
