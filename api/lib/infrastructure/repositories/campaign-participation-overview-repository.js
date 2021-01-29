@@ -25,18 +25,18 @@ module.exports = {
 
 function _findByUserId({ userId }) {
   return knex
-    .select({
-      id: 'campaign-participations.id',
-      createdAt: 'campaign-participations.createdAt',
-      isShared: 'campaign-participations.isShared',
-      sharedAt: 'campaign-participations.sharedAt',
-      validatedSkillsCount: 'campaign-participations.validatedSkillsCount',
-      campaignCode: 'campaigns.code',
-      campaignTitle: 'campaigns.title',
-      targetProfileId: 'campaigns.targetProfileId',
-      organizationName: 'organizations.name',
-      assessmentState: 'assessments.state',
-    })
+    .select([
+      'campaign-participations.id AS id',
+      'campaign-participations.createdAt AS createdAt',
+      'campaign-participations.isShared AS isShared',
+      'campaign-participations.sharedAt AS sharedAt',
+      'campaign-participations.validatedSkillsCount AS validatedSkillsCount',
+      'campaigns.code AS campaignCode',
+      'campaigns.title AS campaignTitle',
+      'campaigns.targetProfileId AS targetProfileId',
+      'organizations.name AS organizationName',
+      'assessments.state AS assessmentState',
+    ])
     .from('campaign-participations')
     .innerJoin('campaigns', 'campaign-participations.campaignId', 'campaigns.id')
     .innerJoin('organizations', 'organizations.id', 'campaigns.organizationId')
@@ -44,7 +44,6 @@ function _findByUserId({ userId }) {
     .modify(_filterMostRecentAssessments)
     .where('campaign-participations.userId', userId)
     .where('campaigns.type', Campaign.types.ASSESSMENT)
-    .whereNull('campaigns.archivedAt')
     .orderBy('campaign-participations.sharedAt', 'DESC')
     .orderBy('assessments.state', 'ASC')
     .orderBy('assessments.createdAt', 'DESC');
@@ -60,34 +59,13 @@ function _filterMostRecentAssessments(queryBuilder) {
 }
 
 function _filterByStates(queryBuilder, states) {
-  queryBuilder.modify(_filterByAssessmentStates, states);
-
-  if (states.includes('ENDED') && states.length === 1) {
-    queryBuilder.where('campaign-participations.isShared', true);
-  } else if (!states.includes('ENDED')) {
-    queryBuilder.where('campaign-participations.isShared', false);
-  }
-}
-
-function _filterByAssessmentStates(queryBuilder, states) {
-  const assessmentStates = _buildAssessmentStates(states);
-  if (assessmentStates.length > 0) {
-    queryBuilder.whereIn('assessments.state', assessmentStates);
-  }
-}
-
-function _buildAssessmentStates(states) {
-  const assessmentStates = [];
-
-  states.forEach((state) => {
-    if (state === 'ONGOING') {
-      assessmentStates.push(Assessment.states.STARTED);
-    } else if (state === 'TO_SHARE') {
-      assessmentStates.push(Assessment.states.COMPLETED);
-    }
-  });
-
-  return assessmentStates;
+  queryBuilder.whereIn(knex.raw(`CASE
+      WHEN assessments.state = '${Assessment.states.STARTED}'  THEN 'ONGOING'
+      WHEN "isShared" = true THEN 'ENDED'
+      WHEN assessments.state = '${Assessment.states.COMPLETED}' AND "archivedAt" IS NOT NULL THEN 'ENDED'
+      WHEN assessments.state = '${Assessment.states.COMPLETED}' AND "archivedAt" IS NULL THEN 'TO_SHARE'
+      ELSE NULL
+      END`), states);
 }
 
 function _toReadModel(campaignParticipationOverviews) {

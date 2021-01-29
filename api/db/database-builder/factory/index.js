@@ -50,4 +50,5 @@ module.exports = {
   buildUserOrgaSettings: require('./build-user-orga-settings'),
   buildUserPixRole: require('./build-user-pix-role'),
   buildUserTutorial: require('./build-user-tutorial'),
+  campaignParticipationOverviewBuilder: require('./campaign-participation-overview-builder'),
 };

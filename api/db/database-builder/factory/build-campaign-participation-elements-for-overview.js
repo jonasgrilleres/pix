@@ -5,12 +5,13 @@ const buildCampaignParticipation = require('./build-campaign-participation');
 const buildCampaign = require('./build-campaign');
 
 module.exports = function buildCampaignParticipationElementsForOverview({ userId,
-  index,
+  index = '',
   lastAssessmentState,
   campaignParticipationCreatedAt,
   campaignParticipationSharedAt,
   campaignArchivedAt,
   isShared,
+  lastAssessmentStateCreationDate = new Date('2000-07-02T10:00:00Z'),
 } = {}) {
   const organization = buildOrganization({
     name: `${index} - My organization`,
@@ -42,7 +43,7 @@ module.exports = function buildCampaignParticipationElementsForOverview({ userId
     userId,
     campaignParticipationId: campaignParticipation.id,
     state: lastAssessmentState,
-    createdAt: new Date('2000-07-02T10:00:00Z'),
+    createdAt: lastAssessmentStateCreationDate,
   });
 
   return {
