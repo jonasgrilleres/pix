@@ -574,8 +574,8 @@ describe('Acceptance | Controller | authentication-controller', () => {
   describe('POST /api/application/token', () => {
 
     let options;
-    const CLIENT_ID = 'clientId';
-    const CLIENT_SECRET = 'clientSecret';
+    const OSMOSE_CLIENT_ID = 'graviteeOsmoseClientId';
+    const OSMOSE_CLIENT_SECRET = 'graviteeOsmoseClientSecret';
     const SCOPE = 'organizations-certifications-result';
 
     beforeEach(async () => {
@@ -595,8 +595,8 @@ describe('Acceptance | Controller | authentication-controller', () => {
 
       options.payload = querystring.stringify({
         grant_type: 'client_credentials',
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
+        clientId: OSMOSE_CLIENT_ID,
+        clientSecret: OSMOSE_CLIENT_SECRET,
         scope: SCOPE,
       });
 
@@ -608,7 +608,7 @@ describe('Acceptance | Controller | authentication-controller', () => {
       const result = response.result;
       expect(result.token_type).to.equal('bearer');
       expect(result.access_token).to.exist;
-      expect(result.client_id).to.equal(CLIENT_ID);
+      expect(result.client_id).to.equal(OSMOSE_CLIENT_ID);
     });
 
     it('should return an 401 when clientId is not registred', async () => {
@@ -617,7 +617,7 @@ describe('Acceptance | Controller | authentication-controller', () => {
       options.payload = querystring.stringify({
         grant_type: 'client_credentials',
         clientId: 'NOT REGISTRED',
-        clientSecret: CLIENT_SECRET,
+        clientSecret: OSMOSE_CLIENT_SECRET,
         scope: SCOPE,
       });
 
@@ -637,7 +637,7 @@ describe('Acceptance | Controller | authentication-controller', () => {
 
       options.payload = querystring.stringify({
         grant_type: 'client_credentials',
-        clientId: CLIENT_ID,
+        clientId: OSMOSE_CLIENT_ID,
         clientSecret: 'invalid secret',
         scope: SCOPE,
       });
@@ -658,8 +658,8 @@ describe('Acceptance | Controller | authentication-controller', () => {
 
       options.payload = querystring.stringify({
         grant_type: 'client_credentials',
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
+        clientId: OSMOSE_CLIENT_ID,
+        clientSecret: OSMOSE_CLIENT_SECRET,
         scope: 'invalid scope',
       });
 
