@@ -43,7 +43,6 @@ function _findByUserId({ userId }) {
     .leftJoin('assessments', 'assessments.campaignParticipationId', 'campaign-participations.id')
     .modify(_filterMostRecentAssessments)
     .where('campaign-participations.userId', userId)
-    .where('campaigns.type', Campaign.types.ASSESSMENT)
     .orderBy('campaign-participations.sharedAt', 'DESC')
     .orderBy('assessments.state', 'ASC')
     .orderBy('assessments.createdAt', 'DESC');
