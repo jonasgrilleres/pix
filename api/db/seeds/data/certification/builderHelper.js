@@ -4,15 +4,16 @@ function _createUser(databaseBuilder) {
   return databaseBuilder.factory.buildUser();
 }
 
-function _createSchoolingRegistration(databaseBuilder, userId, organizationId) {
+function _createSchoolingRegistration(databaseBuilder, userId, organizationId, student) {
   return databaseBuilder.factory.buildSchoolingRegistration(
-    { userId, organizationId },
+    { userId, organizationId, ...student },
   );
 }
 
-function _buildCertificationData({ databaseBuilder, organizationId, isPublished, status, verificationCode, type, pixScore, sessionId, competenceMarks = [{}, {}] }) {
+function _buildCertificationData({ databaseBuilder, organizationId, isPublished, status, verificationCode, type, pixScore, sessionId, competenceMarks = [{}, {}], student }) {
   const userId = _createUser(databaseBuilder).id;
-  const schoolingRegistration = _createSchoolingRegistration(databaseBuilder, userId, organizationId);
+
+  const schoolingRegistration = _createSchoolingRegistration(databaseBuilder, userId, organizationId, student);
 
   const certificationCourse = databaseBuilder.factory.buildCertificationCourse({
     userId,
@@ -96,7 +97,7 @@ function _createAssessmentResultWithCompetenceMarks({
   return { assessmentResult, competenceMarks: createdCompetenceMarks };
 }
 
-const buildValidatedPublishedCertificationData = function({ databaseBuilder, organizationId, verificationCode, type, pixScore, sessionId, competenceMarks }) {
+const buildValidatedPublishedCertificationData = function({ databaseBuilder, organizationId, verificationCode, type, pixScore, sessionId, competenceMarks, student }) {
 
   return _buildCertificationData({
     databaseBuilder,
@@ -108,11 +109,12 @@ const buildValidatedPublishedCertificationData = function({ databaseBuilder, org
     status: status.VALIDATED,
     competenceMarks,
     sessionId,
+    student,
   });
 };
 
-const buildRejectedPublishedCertificationData = function({ databaseBuilder, organizationId, verificationCode, type, pixScore, sessionId }) {
-  return _buildCertificationData({ databaseBuilder, organizationId, verificationCode, type, pixScore, isPublished: true, status: status.REJECTED, sessionId });
+const buildRejectedPublishedCertificationData = function({ databaseBuilder, organizationId, verificationCode, type, pixScore, sessionId, student }) {
+  return _buildCertificationData({ databaseBuilder, organizationId, verificationCode, type, pixScore, isPublished: true, status: status.REJECTED, sessionId, student });
 };
 
 const buildErrorUnpublishedCertificationData = function({ databaseBuilder, organizationId, verificationCode, type, pixScore, sessionId }) {
