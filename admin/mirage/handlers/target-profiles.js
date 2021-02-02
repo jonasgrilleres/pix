@@ -42,6 +42,10 @@ function findPaginatedTargetProfileOrganizations(schema, request) {
   return json;
 }
 
+function findTargetProfileBadges(schema, request) {
+  return schema.badges.all();
+}
+
 function _getPaginationFromQueryParams(queryParams) {
   return {
     pageSize: parseInt(_get(queryParams, 'page[size]', 10)),
@@ -64,7 +68,6 @@ function updateTargetProfileName(schema, request) {
   const targetProfile = schema.targetProfiles.find(id);
   targetProfile.update({ name: newName });
   return new Response(204);
-
 }
 
 export {
@@ -72,5 +75,6 @@ export {
   attachTargetProfileToOrganizations,
   getOrganizationTargetProfiles,
   findPaginatedTargetProfileOrganizations,
+  findTargetProfileBadges,
   updateTargetProfileName,
 };
