@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 let userId;
 
-describe('Integration | Repository | Campaign Participation Overview', () => {
+describe.only('Integration | Repository | Campaign Participation Overview', () => {
 
   beforeEach(async () => {
     userId = databaseBuilder.factory.buildUser().id;
@@ -130,8 +130,8 @@ describe('Integration | Repository | Campaign Participation Overview', () => {
     context('when all campaign participation have different status', ()=> {
       it('orders all campaign participation by status', async () => {
         const { id: participationEndedId } = campaignParticipationOverviewBuilder.buildEnded({ userId });
-        const { id: participationToShareId } = campaignParticipationOverviewBuilder.buildToShare({ userId });
         const { id: participationOnGoingId } = campaignParticipationOverviewBuilder.buildOnGoing({ userId });
+        const { id: participationToShareId } = campaignParticipationOverviewBuilder.buildToShare({ userId });
         await databaseBuilder.commit();
 
         const { campaignParticipationOverviews } = await campaignParticipationOverviewRepository.findByUserIdWithFilters({ userId });
@@ -156,7 +156,7 @@ describe('Integration | Repository | Campaign Participation Overview', () => {
 
     context('when there are several campaign participation with the status ended', () => {
       it('orders campaign participation by sharing date then assessment creation date', async () => {
-        const { id: firstParticipation } = campaignParticipationOverviewBuilder.buildEnded({ userId, sharedAt: new Date('2020-01-01'), assessmentCreatedAt: new Date('2020-01-01') });
+        const { id: firstParticipation } = campaignParticipationOverviewBuilder.buildEnded({ userId, sharedAt: new Date('2020-01-01'), assessmentCreatedAt: new Date('2020-01-04') });
         const { id: secondParticipation } = campaignParticipationOverviewBuilder.buildEnded({ userId, sharedAt: new Date('2020-01-02'), assessmentCreatedAt: new Date('2020-01-02') });
         const { id: lastParticipation } = campaignParticipationOverviewBuilder.buildEnded({ userId, sharedAt: new Date('2020-01-02'), assessmentCreatedAt: new Date('2020-01-03') });
 

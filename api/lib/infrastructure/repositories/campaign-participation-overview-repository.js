@@ -1,6 +1,7 @@
+// eslint-disable no-restricted-syntax
+
 const { knex } = require('../bookshelf');
 const Assessment = require('../../domain/models/Assessment');
-const Campaign = require('../../domain/models/Campaign');
 const CampaignParticipationOverview = require('../../domain/read-models/CampaignParticipationOverview');
 const { fetchPage } = require('../utils/knex-utils');
 
@@ -25,27 +26,42 @@ module.exports = {
 
 function _findByUserId({ userId }) {
   return knex
-    .select([
-      'campaign-participations.id AS id',
-      'campaign-participations.createdAt AS createdAt',
-      'campaign-participations.isShared AS isShared',
-      'campaign-participations.sharedAt AS sharedAt',
-      'campaign-participations.validatedSkillsCount AS validatedSkillsCount',
-      'campaigns.code AS campaignCode',
-      'campaigns.title AS campaignTitle',
-      'campaigns.targetProfileId AS targetProfileId',
-      'organizations.name AS organizationName',
-      'assessments.state AS assessmentState',
-    ])
-    .from('campaign-participations')
-    .innerJoin('campaigns', 'campaign-participations.campaignId', 'campaigns.id')
-    .innerJoin('organizations', 'organizations.id', 'campaigns.organizationId')
-    .leftJoin('assessments', 'assessments.campaignParticipationId', 'campaign-participations.id')
-    .modify(_filterMostRecentAssessments)
-    .where('campaign-participations.userId', userId)
-    .orderBy('campaign-participations.sharedAt', 'DESC')
-    .orderBy('assessments.state', 'ASC')
-    .orderBy('assessments.createdAt', 'DESC');
+    .with('campaign-participation-overviews', (qb) => {
+      qb.select([
+        'campaign-participations.id AS id',
+        'campaign-participations.createdAt AS createdAt',
+        'campaign-participations.isShared AS isShared',
+        'campaign-participations.sharedAt AS sharedAt',
+        'campaign-participations.validatedSkillsCount AS validatedSkillsCount',
+        'campaigns.code AS campaignCode',
+        'campaigns.title AS campaignTitle',
+        'campaigns.targetProfileId AS targetProfileId',
+        'organizations.name AS organizationName',
+        'assessments.state AS assessmentState',
+        'assessments.createdAt AS assessmentCreatedAt',
+        knex.raw(`${_computeCampaignParticipationState()} AS "participationState"`),
+      ])
+        .from('campaign-participations')
+        .innerJoin('campaigns', 'campaign-participations.campaignId', 'campaigns.id')
+        .innerJoin('organizations', 'organizations.id', 'campaigns.organizationId')
+        .leftJoin('assessments', 'assessments.campaignParticipationId', 'campaign-participations.id')
+        .modify(_filterMostRecentAssessments)
+        .where('campaign-participations.userId', userId);
+    })
+    .from('campaign-participation-overviews')
+    .orderByRaw(_computeCampaignParticipationOrder())
+    .orderBy('sharedAt', 'DESC')
+    .orderBy('assessmentCreatedAt', 'DESC');
+}
+
+function _computeCampaignParticipationState() {
+  return `
+  CASE
+    WHEN assessments.state = '${Assessment.states.STARTED}'  THEN 'ONGOING'
+    WHEN assessments.state = '${Assessment.states.COMPLETED}' AND ("archivedAt" IS NOT NULL OR "isShared" = true) THEN 'ENDED'
+    WHEN assessments.state = '${Assessment.states.COMPLETED}' AND "archivedAt" IS NULL THEN 'TO_SHARE'
+    ELSE NULL
+  END`;
 }
 
 function _filterMostRecentAssessments(queryBuilder) {
@@ -57,14 +73,18 @@ function _filterMostRecentAssessments(queryBuilder) {
     .whereNull('newerAssessments.id');
 }
 
+function _computeCampaignParticipationOrder() {
+  return `
+  CASE
+    WHEN "participationState" = 'TO_SHARE' THEN 1
+    WHEN "participationState" = 'ONGOING'  THEN 2
+    WHEN "participationState" = 'ENDED'    THEN 3
+    ELSE NULL
+  END`;
+}
+
 function _filterByStates(queryBuilder, states) {
-  queryBuilder.whereIn(knex.raw(`CASE
-      WHEN assessments.state = '${Assessment.states.STARTED}'  THEN 'ONGOING'
-      WHEN "isShared" = true THEN 'ENDED'
-      WHEN assessments.state = '${Assessment.states.COMPLETED}' AND "archivedAt" IS NOT NULL THEN 'ENDED'
-      WHEN assessments.state = '${Assessment.states.COMPLETED}' AND "archivedAt" IS NULL THEN 'TO_SHARE'
-      ELSE NULL
-      END`), states);
+  queryBuilder.whereIn('participationState', states);
 }
 
 function _toReadModel(campaignParticipationOverviews) {
