@@ -37,17 +37,4 @@ export default class Content extends Component {
     const orderedAndFilteredScorecards = orderBy(filteredScorecards, ['index']);
     return orderedAndFilteredScorecards.slice(0, this.MAX_SCORECARDS_TO_DISPLAY);
   }
-
-  get userFirstname() {
-    return this.currentUser.user.firstName;
-  }
-
-  get hasUserSeenNewDashboardInfo() {
-    return this.currentUser.user.hasSeenNewDashboardInfo;
-  }
-
-  @action
-  async closeInformationAboutNewDashboard() {
-    await this.currentUser.user.save({ adapterOptions: { rememberUserHasSeenNewDashboardInfo: true } });
-  }
 }
