@@ -1,5 +1,8 @@
 # Pix Changelog
 
+## v3.15.0 (03/02/2021)
+
+
 ## v3.14.0 (03/02/2021)
 
 - [#2486](https://github.com/1024pix/pix/pull/2486) [FEATURE] Ajout de "Mes parcours" dans le menu de Pix App (PIX-2004)
