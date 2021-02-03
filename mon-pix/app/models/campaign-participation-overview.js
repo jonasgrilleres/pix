@@ -10,10 +10,12 @@ export default class CampaignParticipationOverviews extends Model {
   @attr('string') assessmentState;
   @attr('string') campaignCode;
   @attr('string') campaignTitle;
+  @attr('date') campaignArchivedAt;
   @attr('number') masteryPercentage;
 
   get status() {
     if (this.isShared) return 'finished';
+    if (this.assessmentState == 'completed' && this.campaignArchivedAt) return 'archived';
 
     return this.assessmentState;
   }

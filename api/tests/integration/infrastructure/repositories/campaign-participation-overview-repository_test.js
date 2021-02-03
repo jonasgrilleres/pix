@@ -20,7 +20,7 @@ describe.only('Integration | Repository | Campaign Participation Overview', () =
       it('retrieves information about campaign participation, campaign and organization', async () => {
         const { id: targetProfileId } = databaseBuilder.factory.buildTargetProfile();
         const { id: organizationId } = databaseBuilder.factory.buildOrganization({ name: 'Organization ABCD' });
-        const { id: campaignId } = databaseBuilder.factory.buildCampaign({ title: 'Campaign ABCD', code: 'ABCD', organizationId, targetProfileId });
+        const { id: campaignId } = databaseBuilder.factory.buildCampaign({ title: 'Campaign ABCD', code: 'ABCD', archivedAt: new Date('2020-01-03'), organizationId, targetProfileId });
         const { id: participationId } = databaseBuilder.factory.buildCampaignParticipation({ userId, campaignId, createdAt: new Date('2020-01-01'), sharedAt: new Date('2020-01-02'), validatedSkillsCount: 12 });
         databaseBuilder.factory.buildAssessment({ campaignParticipationId: participationId, state: Assessment.states.STARTED });
         await databaseBuilder.commit();
@@ -34,6 +34,7 @@ describe.only('Integration | Repository | Campaign Participation Overview', () =
           isShared: true,
           campaignCode: 'ABCD',
           campaignTitle: 'Campaign ABCD',
+          campaignArchivedAt: new Date('2020-01-03'),
           organizationName: 'Organization ABCD',
           assessmentState: Assessment.states.STARTED,
           validatedSkillsCount: 12,

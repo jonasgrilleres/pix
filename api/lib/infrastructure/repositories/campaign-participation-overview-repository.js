@@ -36,6 +36,7 @@ function _findByUserId({ userId }) {
         'campaigns.code AS campaignCode',
         'campaigns.title AS campaignTitle',
         'campaigns.targetProfileId AS targetProfileId',
+        'campaigns.archivedAt AS campaignArchivedAt',
         'organizations.name AS organizationName',
         'assessments.state AS assessmentState',
         'assessments.createdAt AS assessmentCreatedAt',

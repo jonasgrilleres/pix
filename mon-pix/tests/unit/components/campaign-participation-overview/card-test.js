@@ -15,7 +15,7 @@ describe('Unit | Component | CampaignParticipation | Card', function() {
     component = createGlimmerComponent('component:campaign-participation-overview/card');
   });
 
-  describe('#cardInfo', function() {
+  describe.only('#cardInfo', function() {
 
     it('should return the card info when the status is "completed"', function() {
       // given
@@ -72,6 +72,25 @@ describe('Unit | Component | CampaignParticipation | Card', function() {
         actionText: 'pages.campaign-participation-overview.card.resume',
         actionClass: 'button button--link',
         dateText: 'pages.campaign-participation-overview.card.started-at',
+      });
+    });
+
+    it('should return the card info when the status is "archived"', function() {
+      // given
+      component.args.model = store.createRecord('campaign-participation-overview', {
+        assessmentState: 'archived',
+      });
+
+      // when
+      const result = component.cardInfo;
+
+      // then
+      expect(result).to.deep.equal({
+        tagText: null,
+        tagColor: null,
+        actionText: null,
+        actionClass: null,
+        dateText: null,
       });
     });
   });

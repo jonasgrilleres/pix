@@ -16,6 +16,7 @@ describe('Unit | Serializer | JSONAPI | campaign-participation-overview-serializ
       assessmentState: 'started',
       campaignCode: '1234',
       campaignTitle: 'My campaign',
+      campaignArchivedAt: new Date('2021-01-01'),
     });
 
     let expectedSerializedCampaignParticipationOverview;
@@ -33,6 +34,7 @@ describe('Unit | Serializer | JSONAPI | campaign-participation-overview-serializ
             'assessment-state': 'started',
             'campaign-code': '1234',
             'campaign-title': 'My campaign',
+            'campaign-archived-at': new Date('2021-01-01'),
             'mastery-percentage': 50,
           },
         },

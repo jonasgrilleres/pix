@@ -12,33 +12,53 @@ describe('Unit | Model | Campaign-Participation-Overview', function() {
   });
 
   describe('#status', () => {
-
-    it('should return the status "started"', function() {
-      // given
-      const model = store.createRecord('campaign-participation-overview', {
-        assessmentState: 'started',
+    context('when the assessment state is "started"', () => {
+      it('should return the status "started"', function() {
+        // given
+        const model = store.createRecord('campaign-participation-overview', {
+          assessmentState: 'started',
+        });
+        // when / then
+        expect(model.status).to.equal('started');
       });
-      // when / then
-      expect(model.status).to.equal('started');
     });
 
-    it('should return the status "completed"', function() {
-      // given
-      const model = store.createRecord('campaign-participation-overview', {
-        assessmentState: 'completed',
+    context('when the assessment state is "completed, the participation is not shared and the campaign is not archived"', () => {
+      it('should return the status "completed"', function() {
+        // given
+        const model = store.createRecord('campaign-participation-overview', {
+          assessmentState: 'completed',
+          isShared: false,
+          campaignArchivedAt: null,
+        });
+        // when / then
+        expect(model.status).to.equal('completed');
       });
-      // when / then
-      expect(model.status).to.equal('completed');
     });
 
-    it('should return the status "finished"', function() {
-      // given
-      const model = store.createRecord('campaign-participation-overview', {
-        assessmentState: 'completed',
-        isShared: true,
+    context('when the assessment state is "completed and the participation is shared"', () => {
+      it('should return the status "finished"', function() {
+        // given
+        const model = store.createRecord('campaign-participation-overview', {
+          assessmentState: 'completed',
+          isShared: true,
+        });
+        // when / then
+        expect(model.status).to.equal('finished');
       });
-      // when / then
-      expect(model.status).to.equal('finished');
+    });
+
+    context('when the assessment state is "completed, the participation is not shared and the campaign is archived"', () => {
+      it('should return the status "archived"', function() {
+        // given
+        const model = store.createRecord('campaign-participation-overview', {
+          assessmentState: 'completed',
+          isShared: false,
+          campaignArchivedAt: new Date('2021-01-01'),
+        });
+        // when / then
+        expect(model.status).to.equal('archived');
+      });
     });
   });
 
